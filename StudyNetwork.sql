@@ -59,6 +59,8 @@ create table Posts(
 	PostDate date Not Null,
 	PostContent varchar(255)
 	check (PostContent like 'https://%')
+	Constraint PostFK Foreign Key (UserID) References Users (UserID)
+	on update cascade on delete set NULL,
 )
 
 create table PostLikes(
