@@ -95,8 +95,6 @@ create table Shares(
 	on update cascade on delete set NULL
 )
 
-drop table Shares
-
 create table Comments(
 	PostID char(5),
 	CommentID char(5) Primary Key
