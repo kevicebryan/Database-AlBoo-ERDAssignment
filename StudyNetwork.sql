@@ -72,7 +72,8 @@ create table PostLikes(
     UserID char(5),
     PostID char(5),
 	constraint PostLikePK Primary Key (UserID, PostID),
-    constraint PostLikeFK foreign key (PostID) REFERENCES Posts(PostID) ON UPDATE CASCADE ON DELETE CASCADE
+    constraint PostLikeFK1 foreign key (PostID) REFERENCES Posts(PostID) ON UPDATE no action ON DELETE no action,
+	constraint PostLikeFK2 foreign key (UserID) REFERENCES Users(UserID) ON UPDATE CASCADE ON DELETE CASCADE
 )
 
 drop table PostLikes
@@ -97,6 +98,8 @@ create table Shares(
 	PostID char(5),
 	Constraint ShareFK1 Foreign Key (PostID) References Posts (PostID)
 	on update cascade on delete cascade,
+	Constraint ShareFK2 Foreign Key (UserID) References Users (UserID)
+	on update no action on delete no action,
 	Constraint SharesPK Primary Key (PostID, UserID)
 )
 
@@ -105,11 +108,12 @@ drop table Shares
 create table Comments(
 	PostID char(5),
 	UserID char(5),
+	CommentID char(5),
 	CommentDate date NOT NULL,
 	CommentContent varchar (255)
 	Constraint CommentFK1 Foreign Key (PostID) References Posts (PostID)
 	on update cascade on delete cascade,
-	Constraint CommentPK Primary Key (PostID, UserID)
+	Constraint CommentPK Primary Key (PostID, UserID, CommentID)
 )
 
 drop table Comments
@@ -119,11 +123,13 @@ drop table Comments
 create table CommentLikes(
 	UserLikeID char(5),
 	PostID char(5),
+	CommentID char(5),
 	UserCommenterID char (5),
-	Constraint CommentLikeFK1 Foreign Key (PostID, UserCommenterID) References Comments(PostID, UserID)
+	Constraint CommentLikeFK1 Foreign Key (PostID, UserCommenterID, CommentID) References Comments(PostID, UserID, CommentID)
 	on update cascade on delete cascade,
-	Constraint CommentLikePK Primary Key (UserLikeID, PostID, UserCommenterID)
+	Constraint CommentLikeFK2 Foreign Key (UserLikeID) References Users(UserID)
+	on update no action on delete no action,
+	Constraint CommentLikePK Primary Key (UserLikeID, PostID, CommentID, UserCommenterID)
 )
 
 drop table CommentLikes
-
