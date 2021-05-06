@@ -20,6 +20,7 @@ create table Users(
 
 
 select * from Users
+drop table Users
 
 create table Pages(
 	PageID char(5) PRIMARY KEY
@@ -30,49 +31,51 @@ create table Pages(
 )
 
 select * from Pages
+drop table Pages
 
 create table PageLikes(
 	UserID char(5),
 	PageID char(5),
-	PageLikeId char(6)
-	check (PageLikeID like 'PaL[0-9][0-9][0-9]') not null primary key,
 	Constraint PageLikeFK1 Foreign Key (UserID) References Users (UserID)
-	on update cascade on delete set NULL,
+	on update cascade on delete cascade,
 	Constraint PageLikeFK2 Foreign Key (PageID) References Pages (PageID)
-	on update cascade on delete set NULL
+	on update cascade on delete cascade,
+	Constraint PageLikePK Primary Key (UserID, PageID)
 )
 
-
+drop table PageLikes
 
 create table Friends(
 	UserID char(5),
 	FriendID char(5)
-	check(FriendID like 'FR[0-9][0-9][0-9]') NOT NULL Primary Key,
+	check(FriendID like 'FR[0-9][0-9][0-9]') NOT NULL,
 	Constraint UserFK Foreign Key (UserID) References Users (UserID)
-	on update cascade on delete set NULL,
+	on update cascade on delete cascade,
+	Constraint FriendPK Primary Key (UserID, FriendID)
 )
+
+drop table Friends
+
 
 create table Posts(
-	UserID char(5),
-	PostID char(5)
-	check(PostID like 'PO[0-9][0-9][0-9]') NOT NULL Primary Key,
-	PostDate date Not Null,
-	PostContent varchar(255)
-	check (PostContent like 'https://%')
-	Constraint PostFK Foreign Key (UserID) References Users (UserID)
-	on update cascade on delete set NULL,
+    UserID char(5) FOREIGN KEY REFERENCES Users(UserID) ON UPDATE CASCADE ON DELETE cascade,
+    PostID char(5) check(PostID like 'PO[0-9][0-9][0-9]'),
+    PostDate date Not Null,
+    PostContent varchar(255) check (PostContent like 'https://%'),
+    CONSTRAINT PostPK PRIMARY KEY (PostID)
 )
 
+drop table Posts
+
+
 create table PostLikes(
-	UserID char(5),
-	PostID char(5),
-	PostLikeId char(6)
-	check (PostLikeID like 'PoL[0-9][0-9][0-9]') not Null primary key,
-	Constraint PostLikeFK1 Foreign Key (UserID) References Users(UserID)
-	on update cascade on delete set NULL,
-	Constraint PostLikeFK2 Foreign Key (PostID) References Posts (PostID)
-	on update cascade on delete set NULL
+    UserID char(5),
+    PostID char(5),
+	constraint PostLikePK Primary Key (UserID, PostID),
+    constraint PostLikeFK foreign key (PostID) REFERENCES Posts(PostID) ON UPDATE CASCADE ON DELETE CASCADE
 )
+
+drop table PostLikes
 
 
 
@@ -83,40 +86,44 @@ create table Photos(
 	PhotoContent varchar(255)
 	check (PhotoContent like 'https://%'),
 	Constraint PhotoLikeFK Foreign Key (PostID) References Posts (PostID)
-	on update cascade on delete set NULL
+	on update cascade on delete cascade
 )
+
+drop table Photos
+
 
 create table Shares(
 	UserID char(5),
 	PostID char(5),
-	SharesId char(6)
-	check (SharesID like 'SHA[0-9][0-9][0-9]') not null Primary Key,
-	Constraint ShareFK1 Foreign Key (UserID) References Users(UserID)
-	on update cascade on delete set NULL,
-	Constraint ShareFK2 Foreign Key (PostID) References Posts (PostID)
-	on update cascade on delete set NULL
+	Constraint ShareFK1 Foreign Key (PostID) References Posts (PostID)
+	on update cascade on delete cascade,
+	Constraint SharesPK Primary Key (PostID, UserID)
 )
+
+drop table Shares
 
 create table Comments(
 	PostID char(5),
-	CommentID char(5) Primary Key
-	check (CommentID like 'CO[0-9][0-9][0-9]') NOT NULL,
 	UserID char(5),
 	CommentDate date NOT NULL,
 	CommentContent varchar (255)
+	Constraint CommentFK1 Foreign Key (PostID) References Posts (PostID)
+	on update cascade on delete cascade,
+	Constraint CommentPK Primary Key (PostID, UserID)
 )
+
+drop table Comments
 
 
 
 create table CommentLikes(
-	CommentID char(5),
-	UserID char(5),
-	CommentLikeId char(6)
-	check (CommentLikeID like 'CoL[0-9][0-9][0-9]') not null Primary Key,
-	Constraint CommentLikeFK1 Foreign Key (UserID) References Users(UserID)
-	on update cascade on delete set NULL,
-	Constraint CommentLikeFK2 Foreign Key (CommentID) References Comments(CommentID)
-	on update cascade on delete set NULL
+	UserLikeID char(5),
+	PostID char(5),
+	UserCommenterID char (5),
+	Constraint CommentLikeFK1 Foreign Key (PostID, UserCommenterID) References Comments(PostID, UserID)
+	on update cascade on delete cascade,
+	Constraint CommentLikePK Primary Key (UserLikeID, PostID, UserCommenterID)
 )
 
+drop table CommentLikes
 
