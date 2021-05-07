@@ -113,7 +113,9 @@ create table Comments(
 	CommentContent varchar (255)
 	Constraint CommentFK1 Foreign Key (PostID) References Posts (PostID)
 	on update cascade on delete cascade,
-	Constraint CommentPK Primary Key (PostID, UserID, CommentID)
+	Constraint CommentFK2 Foreign Key (PostID) References Users (UserID)
+	on update no action on delete no action, 
+	Constraint CommentPK Primary Key (PostID, UserID,CommentID)
 )
 
 drop table Comments
@@ -131,5 +133,4 @@ create table CommentLikes(
 	on update no action on delete no action,
 	Constraint CommentLikePK Primary Key (UserLikeID, PostID, CommentID, UserCommenterID)
 )
-
 drop table CommentLikes
